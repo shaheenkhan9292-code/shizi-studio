@@ -1,59 +1,207 @@
-<style>
-        :root { 
-            --accent: #00f2ff; 
-            --bg: #050505; 
-            --glass: rgba(255, 255, 255, 0.03); 
-            --border: rgba(255, 255, 255, 0.1); 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHIZI STUDIO | Beyond Reality</title>
+    <style>
+        :root {
+            --accent: #00f2ff;
+            --secondary: #7000ff;
+            --bg: #020202;
+            --glass: rgba(255, 255, 255, 0.02);
+            --border: rgba(255, 255, 255, 0.08);
         }
 
-        /* 1. THE DARK NEON BACKGROUND */
-        body { 
-            margin: 0; 
-            background: radial-gradient(circle at top, #0a1a1c 0%, #050505 100%);
-            color: white; 
-            font-family: 'Segoe UI', sans-serif;
-            overflow-x: hidden;
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
+        body {
+            background: var(--bg);
+            color: white;
+            font-family: 'Syncopate', sans-serif; /* Futuristic font */
+            overflow: hidden;
+            height: 100vh;
         }
 
-        /* 2. THE GLASS NAVIGATION */
-        nav { 
-            position: fixed; top: 0; width: 100%; height: 70px; 
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(20px); 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 50px; border-bottom: 1px solid var(--border); z-index: 100;
+        /* THE "NEVER SEEN" MESH BACKGROUND */
+        .mesh-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(at 0% 0%, rgba(0, 242, 255, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(112, 0, 255, 0.15) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(5, 5, 5, 1) 0px, transparent 100%);
+            z-index: -2;
+            animation: meshMove 20s infinite alternate;
         }
-        .nav-logo { font-weight: 900; font-size: 1.5rem; letter-spacing: -1px; }
-        .nav-logo span { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
 
-        /* 3. THE "SHIZI" 3D PANEL (BETTER THAN VIZZY) */
-        .panel-3d { 
-            width: 100%; max-width: 700px; height: 350px; 
-            background: var(--glass); 
-            border: 1px solid var(--border); border-radius: 40px; 
-            display: flex; justify-content: center; align-items: center; 
-            margin: 100px auto 40px; 
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transition: 0.5s;
-            cursor: pointer;
+        @keyframes meshMove {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2) rotate(5deg); }
         }
-        .panel-3d:hover {
-            transform: translateY(-10px) rotateX(5deg);
-            border-color: var(--accent);
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.2);
-        }
-        .panel-3d h2 { font-size: 6rem; font-weight: 900; letter-spacing: -5px; }
 
-        /* 4. THE GLOWING DOWNLOAD BUTTONS */
-        .btn { 
-            background: white; color: black; border: none; 
-            padding: 15px 30px; border-radius: 12px; 
-            font-weight: 800; cursor: pointer; text-transform: uppercase;
-            box-shadow: 0 0 0px var(--accent);
+        /* CUSTOM CYBER CURSOR */
+        #cursor {
+            width: 20px; height: 20px; border: 1px solid var(--accent);
+            border-radius: 50%; position: fixed; pointer-events: none;
+            z-index: 9999; transition: transform 0.1s;
+            box-shadow: 0 0 15px var(--accent);
         }
-        .btn:hover { 
-            background: var(--accent); 
-            box-shadow: 0 0 25px var(--accent); 
-            transform: scale(1.05); 
+
+        /* NEUROMORPHIC NAVIGATION */
+        nav {
+            position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 600px; height: 60px;
+            background: var(--glass); backdrop-filter: blur(30px);
+            border: 1px solid var(--border); border-radius: 100px;
+            display: flex; align-items: center; justify-content: space-around;
+            z-index: 1000;
         }
+
+        nav a {
+            color: rgba(255,255,255,0.4); text-decoration: none; font-size: 0.7rem;
+            letter-spacing: 3px; font-weight: 900; transition: 0.5s;
+        }
+
+        nav a.active, nav a:hover { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+
+        /* INTERACTIVE LOGO */
+        .main-stage {
+            height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            perspective: 1000px;
+        }
+
+        .glitch-box {
+            position: relative; font-size: 10vw; font-weight: 900;
+            letter-spacing: -10px; color: white;
+            text-shadow: 2px 2px var(--secondary), -2px -2px var(--accent);
+            animation: float 4s infinite ease-in-out;
+            transition: 0.3s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-20px) rotateY(10deg); }
+        }
+
+        /* LIQUID BUTTONS */
+        .btn-liquid {
+            margin-top: 40px; padding: 20px 60px; border-radius: 50px;
+            background: transparent; border: 1px solid var(--accent);
+            color: var(--accent); font-weight: 900; letter-spacing: 5px;
+            overflow: hidden; position: relative; transition: 0.5s;
+        }
+
+        .btn-liquid:hover {
+            background: var(--accent); color: black;
+            box-shadow: 0 0 50px var(--accent);
+            transform: scale(1.1);
+        }
+
+        /* TAB CONTAINERS */
+        .content-layer {
+            position: absolute; width: 100%; height: 100%;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .content-layer.active { display: flex; animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+
+        @keyframes slideUp { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        /* STUDIO WORKSTATION */
+        .workstation {
+            width: 80%; max-width: 1000px; height: 500px;
+            background: var(--glass); border: 1px solid var(--border);
+            border-radius: 40px; display: grid; grid-template-columns: 1fr 2fr;
+            padding: 40px; gap: 40px;
+        }
+
+        .control-panel { display: flex; flex-direction: column; gap: 20px; }
+        .visualizer-preview {
+            border: 1px solid var(--border); border-radius: 20px;
+            background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;
+        }
+
     </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <div class="mesh-bg"></div>
+
+    <nav>
+        <a href="#" onclick="showLayer('home')" class="nav-btn active" id="l-home">CORE</a>
+        <a href="#" onclick="showLayer('studio')" class="nav-btn" id="l-studio">LAB</a>
+        <a href="#" onclick="showLayer('donate')" class="nav-btn" id="l-donate">FUEL</a>
+    </nav>
+
+    <div id="home" class="content-layer active">
+        <div class="main-stage">
+            <div class="glitch-box">SHIZI</div>
+            <p style="letter-spacing: 15px; font-size: 0.8rem; margin-top: 20px; color: #555;">BEYOND AUDITORY BOUNDARIES</p>
+            <button class="btn-liquid" onclick="startInstall()">INITIALIZE INSTALL</button>
+        </div>
+    </div>
+
+    <div id="studio" class="content-layer">
+        <div class="workstation">
+            <div class="control-panel">
+                <h3 style="font-size: 0.6rem; letter-spacing: 3px; color: var(--accent);">SYSTEM_CONTROLS</h3>
+                <div style="margin-top: 20px;">
+                    <p style="font-size: 0.5rem; margin-bottom: 10px;">CHROMATIC_SYNC</p>
+                    <div style="display: flex; gap: 10px;">
+                        <div onclick="updateTheme('#00f2ff')" style="width:20px; height:20px; background:#00f2ff; border-radius:50%; cursor:pointer;"></div>
+                        <div onclick="updateTheme('#ff0055')" style="width:20px; height:20px; background:#ff0055; border-radius:50%; cursor:pointer;"></div>
+                        <div onclick="updateTheme('#00ff77')" style="width:20px; height:20px; background:#00ff77; border-radius:50%; cursor:pointer;"></div>
+                    </div>
+                </div>
+                <button class="btn-liquid" style="font-size: 0.6rem; padding: 15px;" onclick="document.getElementById('audio-in').click()">INJECT_AUDIO</button>
+                <input type="file" id="audio-in" style="display: none;">
+            </div>
+            <div class="visualizer-preview">
+                <div id="wave-mock" style="width: 80%; height: 2px; background: var(--accent); box-shadow: 0 0 20px var(--accent); animation: pulse 1s infinite alternate;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="donate" class="content-layer">
+        <div class="glitch-box" style="font-size: 4vw;">SUPPORT</div>
+        <p style="max-width: 400px; text-align: center; color: #666; font-size: 0.7rem; line-height: 2; margin: 20px 0;">Help us keep Shizi Studio independent and evolving.</p>
+        <button class="btn-liquid">TRANSACT_DONATION</button>
+    </div>
+
+    <script>
+        // CURSOR MOVEMENT
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // LAYER SWITCHING
+        function showLayer(id) {
+            document.querySelectorAll('.content-layer').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById('l-' + id).classList.add('active');
+        }
+
+        // THEME ENGINE
+        function updateTheme(color) {
+            document.documentElement.style.setProperty('--accent', color);
+            cursor.style.borderColor = color;
+            cursor.style.boxShadow = `0 0 15px ${color}`;
+        }
+
+        // INSTALLER
+        function startInstall() {
+            alert("Redirecting to Secure GitHub Server...");
+            window.location.href = "https://github.com/Shaharyar-Khan/shizi-studio/releases/latest/download/shizi.exe";
+        }
+
+        @keyframes pulse {
+            from { transform: scaleX(0.8); opacity: 0.5; }
+            to { transform: scaleX(1.2); opacity: 1; }
+        }
+    </script>
+</body>
+</html>
