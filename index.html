@@ -3,123 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHIZI STUDIO | Elite Audio Visualizer</title>
     
-    <title>SHIZI STUDIO | Official Audio Visualizer</title>
-    <meta name="title" content="SHIZI STUDIO">
-    <meta name="description" content="Download SHIZI STUDIO - The official next-gen audio visualizer and sound editor for Windows and Mac. Created by Shaharyar Khan.">
-    <meta name="keywords" content="Shizi Studio, Shizi Visualizer, Download Shizi, Shaharyar Khan, Audio Editor, Vizzy Alternative">
-    <meta name="robots" content="index, follow">
-
     <style>
         :root { 
             --accent: #00f2ff; 
-            --bg: #030303; 
-            --panel: rgba(255, 255, 255, 0.03); 
-            --border: rgba(255, 255, 255, 0.08); 
-            --text-dim: #888; 
+            --bg: #010101; 
+            --glass: rgba(255, 255, 255, 0.02); 
+            --glass-border: rgba(255, 255, 255, 0.07); 
         }
 
-        * { box-sizing: border-box; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); font-family: 'Segoe UI', sans-serif; }
-        body { margin: 0; background: var(--bg); color: white; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
+        /* ULTRA-AESTHETIC ANIMATED BACKGROUND */
+        body { 
+            margin: 0; 
+            background: radial-gradient(circle at 50% 50%, #081a1c 0%, #010101 100%);
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            overflow-x: hidden;
+            min-height: 100vh;
+            perspective: 2000px;
+        }
 
-        /* NAVIGATION */
+        /* THE FLOATING NEON GRID EFFECT */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(var(--glass-border) 1px, transparent 1px), linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: rotateX(60deg) translateY(-200px);
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        * { box-sizing: border-box; transition: all 0.7s cubic-bezier(0.15, 0.85, 0.35, 1); font-family: 'Inter', 'Syncopate', sans-serif; }
+
+        /* NEON NAVIGATION */
         nav { 
             position: fixed; top: 0; width: 100%; height: 80px; 
-            background: rgba(3,3,3,0.8); backdrop-filter: blur(20px); 
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(30px); 
             display: flex; align-items: center; justify-content: space-between; 
-            padding: 0 50px; border-bottom: 1px solid var(--border); z-index: 9999; 
+            padding: 0 80px; border-bottom: 1px solid var(--glass-border); z-index: 9999; 
         }
-        .nav-logo { font-weight: 900; font-size: 1.8rem; cursor: pointer; }
-        .nav-logo span { color: var(--accent); }
-        .nav-links { display: flex; gap: 30px; align-items: center; }
-        .nav-links a { text-decoration: none; color: var(--text-dim); font-size: 0.85rem; font-weight: 700; cursor: pointer; text-transform: uppercase; }
-        .nav-links a.active { color: white; border-bottom: 2px solid var(--accent); }
-        .donate-btn { background: var(--accent); color: black !important; padding: 10px 22px !important; border-radius: 30px; font-size: 0.75rem !important; }
+        .nav-logo { font-weight: 900; font-size: 1.8rem; letter-spacing: -3px; cursor: pointer; text-transform: uppercase; }
+        .nav-logo span { color: var(--accent); text-shadow: 0 0 20px var(--accent); }
+        .nav-links { display: flex; gap: 50px; }
+        .nav-links a { text-decoration: none; color: #444; font-size: 0.75rem; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
+        .nav-links a.active { color: white; text-shadow: 0 0 10px white; }
+        .donate-btn { color: var(--accent) !important; border: 1px solid var(--accent); padding: 10px 25px !important; border-radius: 2px; transition: 0.3s; }
+        .donate-btn:hover { background: var(--accent); color: black !important; box-shadow: 0 0 30px var(--accent); }
 
         /* TABS */
-        .tab-view { display: none; width: 100%; padding: 120px 20px 60px; flex-direction: column; align-items: center; }
-        .tab-view.active { display: flex; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-view { display: none; width: 100%; padding: 160px 20px 80px; flex-direction: column; align-items: center; }
+        .tab-view.active { display: flex; animation: reveal 1s ease-out; }
+        @keyframes reveal { from { opacity: 0; filter: blur(20px); transform: scale(1.1); } to { opacity: 1; filter: blur(0); transform: scale(1); } }
 
-        /* 3D INTERACTIVE PANEL */
+        /* THE "BETTER THAN VIZZY" 3D PANEL */
+        .panel-wrapper { position: relative; width: 100%; max-width: 800px; height: 450px; margin: 40px 0; cursor: pointer; }
         .panel-3d { 
-            width: 100%; max-width: 650px; height: 350px; 
-            background: linear-gradient(145deg, #0a0a0a, #000); 
-            border: 2px solid var(--border); border-radius: 24px; 
-            transform: perspective(1000px) rotateX(15deg); 
-            box-shadow: 0 50px 100px rgba(0,0,0,0.8); 
+            width: 100%; height: 100%; 
+            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(0,0,0,0.8));
+            border: 1px solid var(--glass-border); border-radius: 20px; 
             display: flex; justify-content: center; align-items: center; 
-            margin: 40px 0; cursor: pointer;
+            backdrop-filter: blur(20px);
+            transform-style: preserve-3d;
+            transform: rotateY(-20deg) rotateX(10deg);
         }
-        .panel-3d:hover {
-            transform: perspective(1000px) rotateX(0deg) scale(1.03);
+        .panel-wrapper:hover .panel-3d {
+            transform: rotateY(20deg) rotateX(5deg);
             border-color: var(--accent);
-            box-shadow: 0 0 50px rgba(0,242,255,0.3);
+            box-shadow: -30px 30px 100px rgba(0, 242, 255, 0.15);
         }
-        .panel-3d h2 { font-size: 4.5rem; color: var(--accent); text-shadow: 0 0 30px var(--accent); margin: 0; }
+        .panel-3d h2 { 
+            font-size: 8rem; color: white; margin: 0; font-weight: 900; letter-spacing: -8px;
+            transform: translateZ(100px); /* Massive depth effect */
+            text-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
 
-        /* DOWNLOADS */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; max-width: 900px; }
-        .card { background: var(--panel); border: 1px solid var(--border); padding: 40px; border-radius: 24px; text-align: center; }
-        .btn { background: white; color: black; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 1rem; margin-top: 15px; }
-        .btn:hover { background: var(--accent); transform: translateY(-3px); }
+        /* CYBER DOWNLOAD CARDS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; width: 100%; max-width: 1100px; }
+        .card { 
+            background: var(--glass); border: 1px solid var(--glass-border); 
+            padding: 60px; border-radius: 15px; text-align: center; 
+            position: relative; overflow: hidden;
+        }
+        .card::before {
+            content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent));
+            animation: lineFlow 3s infinite;
+        }
+        @keyframes lineFlow { to { left: 100%; } }
+        
+        .btn { 
+            background: white; color: black; border: none; padding: 22px; 
+            width: 100%; border-radius: 4px; font-weight: 900; cursor: pointer; 
+            font-size: 0.8rem; text-transform: uppercase; margin-top: 25px; letter-spacing: 2px;
+        }
+        .btn:hover { background: var(--accent); letter-spacing: 4px; box-shadow: 0 0 40px var(--accent); }
 
-        /* STUDIO BOX */
-        .studio-box { background: var(--panel); border: 1px solid var(--accent); padding: 40px; border-radius: 24px; width: 100%; max-width: 500px; text-align: center; }
-        .color-group { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
-        .color-dot { width: 45px; height: 45px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; }
-        .color-dot.active { border-color: white; transform: scale(1.1); }
+        /* FUNCTIONAL STUDIO BOX */
+        .studio-box { 
+            background: var(--glass); border: 1px solid var(--glass-border); 
+            padding: 60px; border-radius: 20px; width: 100%; max-width: 600px; 
+            text-align: center; backdrop-filter: blur(40px);
+        }
+        .color-dot { width: 35px; height: 35px; border-radius: 2px; cursor: pointer; display: inline-block; margin: 0 12px; border: 1px solid #333; }
+        .color-dot.active { border-color: var(--accent); box-shadow: 0 0 15px var(--accent); transform: scale(1.2); }
+        
+        input[type="file"] { 
+            margin-top: 40px; width: 100%; padding: 20px; 
+            background: black; color: var(--accent); border: 1px solid #222; 
+            font-weight: 800; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="nav-logo" onclick="toggleTab('home')">SHIZI<span>.</span></div>
+        <div class="nav-logo" onclick="toggleTab('home')">SHIZI<span>STUDIO</span></div>
         <div class="nav-links">
-            <a id="link-home" class="active" onclick="toggleTab('home')">Home</a>
-            <a id="link-studio" onclick="toggleTab('studio')">Studio</a>
-            <a class="donate-btn" onclick="alert('Thank you best friend! Donation system is coming soon! 🖐️')">Donate</a>
+            <a id="link-home" class="active" onclick="toggleTab('home')">// HOME</a>
+            <a id="link-studio" onclick="toggleTab('studio')">// WORKSTATION</a>
+            <a class="donate-btn" onclick="alert('Victory High Five! 🖐️')">SUPPORT</a>
         </div>
     </nav>
 
     <div id="home" class="tab-view active">
-        <h1>SHIZI STUDIO</h1>
-        <p style="color: var(--text-dim)">Professional Audio Editing & Visualization</p>
-        <div class="panel-3d" onclick="toggleTab('studio')"><h2>STUDIO</h2></div>
+        <h1 style="font-size: 0.8rem; color: var(--accent); letter-spacing: 8px; margin-bottom: 0;">CORE_SYSTEM_OS</h1>
+        <div class="panel-wrapper" onclick="toggleTab('studio')">
+            <div class="panel-3d">
+                <h2>SHIZI</h2>
+            </div>
+        </div>
         <div class="grid">
             <div class="card">
-                <h3>Windows OS</h3>
-                <button class="btn" onclick="triggerDownload('exe')">Install .exe</button>
+                <p style="color: #333; font-size: 0.7rem; font-weight: 900; letter-spacing: 3px;">WIN_X64_RELEASE</p>
+                <button class="btn" onclick="triggerDownload('exe')">Get Shizi .EXE</button>
             </div>
             <div class="card">
-                <h3>macOS</h3>
-                <button class="btn" onclick="triggerDownload('dmg')">Install .dmg</button>
+                <p style="color: #333; font-size: 0.7rem; font-weight: 900; letter-spacing: 3px;">MAC_ARM_RELEASE</p>
+                <button class="btn" onclick="triggerDownload('dmg')">Get Shizi .DMG</button>
             </div>
         </div>
     </div>
 
     <div id="studio" class="tab-view">
-        <h1>STUDIO CONTROL</h1>
         <div class="studio-box">
-            <p>Customize Theme Color:</p>
-            <div class="color-group">
+            <h2 style="letter-spacing: -2px; font-size: 2.5rem;">INTERFACE CONFIG</h2>
+            <div style="margin: 40px 0;">
                 <div class="color-dot active" style="background: #00f2ff;" onclick="changeColor('#00f2ff', this)"></div>
                 <div class="color-dot" style="background: #ffcc00;" onclick="changeColor('#ffcc00', this)"></div>
                 <div class="color-dot" style="background: #ff0070;" onclick="changeColor('#ff0070', this)"></div>
                 <div class="color-dot" style="background: #a200ff;" onclick="changeColor('#a200ff', this)"></div>
             </div>
-            <p>Upload Audio for Analysis:</p>
-            <input type="file" accept="audio/*">
+            <p style="color: #444; font-size: 0.7rem; letter-spacing: 2px;">LOAD AUDIO STREAM (.MP3 / .WAV)</p>
+            <input type="file" id="audioUpload" accept="audio/*">
         </div>
     </div>
 
     <script>
-        function toggleTab(tabId) {
+        function toggleTab(id) {
             document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if(tabId === 'home') document.getElementById('link-home').classList.add('active');
-            else document.getElementById('link-studio').classList.add('active');
+            document.getElementById(id).classList.add('active');
+            document.getElementById('link-' + id).classList.add('active');
         }
 
         function changeColor(c, el) {
@@ -129,11 +178,16 @@
         }
 
         function triggerDownload(type) {
-            if (type === 'exe') {
-                window.location.href = "https://github.com/Shaharyar-Khan/shizi-studio/releases/download/v1.0/shizi.exe"; 
-            } else {
-                window.location.href = "https://github.com/Shaharyar-Khan/shizi-studio/releases/download/v1.0/shizi.dmg";
-            }
+            let url = (type === 'exe') 
+                ? "https://github.com/Shaharyar-Khan/shizi-studio/releases/download/v1.0/shizi.exe" 
+                : "https://github.com/Shaharyar-Khan/shizi-studio/releases/download/v1.0/shizi.dmg";
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', '');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
