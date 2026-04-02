@@ -3,125 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHIZI STUDIO | Official</title>
+    <title>SHIZI STUDIO | Official Audio Visualizer</title>
     <style>
         :root {
             --accent: #00f2ff;
             --bg: #050505;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --vizzy-glow: rgba(0, 242, 255, 0.15);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: radial-gradient(circle at top, #0a1a1c 0%, #050505 100%);
+            background-color: var(--bg);
             color: white;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
             overflow-x: hidden;
-            text-align: center;
-            cursor: auto; /* Normal cursor is back! */
+            background: radial-gradient(circle at 50% -20%, #102022 0%, #050505 80%);
         }
 
-        /* NAVIGATION */
+        /* VIZZY STYLE REACTIVE BACKGROUND */
+        .aura {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), var(--vizzy-glow) 0%, transparent 50%);
+            z-index: -1; pointer-events: none;
+        }
+
+        /* WORLD-CLASS NAVIGATION */
         nav {
-            position: fixed; top: 0; width: 100%; height: 80px;
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(20px);
+            position: fixed; top: 0; width: 100%; height: 70px;
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 50px; border-bottom: 1px solid var(--border); z-index: 1000;
+            padding: 0 10%; z-index: 1000;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(30px);
+            border-bottom: 1px solid var(--border);
         }
-        .nav-logo { font-weight: 900; font-size: 1.5rem; letter-spacing: -1px; }
-        .nav-logo span { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
+        .logo { font-size: 1.4rem; font-weight: 900; letter-spacing: -1px; }
+        .logo span { color: var(--accent); text-shadow: 0 0 20px var(--accent); }
 
-        .nav-links { display: flex; gap: 30px; }
-        .nav-links a { color: #888; text-decoration: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .nav-links a.active, .nav-links a:hover { color: white; }
+        .nav-links { display: flex; gap: 40px; }
+        .nav-links a { 
+            text-decoration: none; color: #666; font-weight: 700; font-size: 0.8rem;
+            letter-spacing: 1.5px; transition: 0.4s; cursor: pointer;
+        }
+        .nav-links a:hover, .nav-links a.active { color: white; }
 
-        /* HERO AREA */
-        .container { display: none; padding-top: 120px; animation: fadeIn 0.5s ease-in; }
+        /* HERO SECTION */
+        .container { display: none; padding-top: 150px; text-align: center; animation: slideUp 0.8s ease; }
         .container.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        .panel-3d { 
-            width: 90%; max-width: 800px; height: 350px; 
-            background: var(--glass); border: 1px solid var(--border); 
-            border-radius: 40px; display: flex; justify-content: center; 
-            align-items: center; margin: 40px auto; 
-            backdrop-filter: blur(15px); transition: 0.5s;
+        /* THE 3D PANEL (VIZZY SIGNATURE) */
+        .panel-3d {
+            width: 90%; max-width: 850px; height: 420px;
+            margin: 0 auto 60px; border-radius: 50px;
+            background: var(--glass); border: 1px solid var(--border);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            backdrop-filter: blur(20px); transition: 0.6s cubic-bezier(0.2, 1, 0.3, 1);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
         }
-        .panel-3d:hover { transform: translateY(-10px); border-color: var(--accent); }
-        .shizi-text { font-size: 7rem; font-weight: 900; letter-spacing: -5px; text-shadow: 0 0 30px var(--accent); }
+        .panel-3d:hover {
+            transform: translateY(-20px) scale(1.02);
+            border-color: var(--accent);
+            box-shadow: 0 0 60px var(--vizzy-glow);
+        }
+        .panel-3d h2 { font-size: 10vw; font-weight: 900; letter-spacing: -10px; opacity: 0.9; text-shadow: 0 0 40px var(--accent); }
 
-        /* INSTALL BUTTONS */
-        .download-zone { display: flex; justify-content: center; gap: 20px; margin-top: 30px; }
-        .btn { 
-            background: white; color: black; border: none; 
-            padding: 18px 40px; border-radius: 12px; 
-            font-weight: 800; cursor: pointer; transition: 0.3s;
+        /* BUTTON DESIGN - WORLD BEST STYLE */
+        .btn-group { display: flex; justify-content: center; gap: 20px; }
+        .btn-main {
+            background: white; color: black; border: none; padding: 20px 45px;
+            border-radius: 15px; font-weight: 800; font-size: 1rem;
+            cursor: pointer; transition: 0.5s;
         }
-        .btn.mac { background: transparent; border: 1px solid #444; color: white; }
-        .btn:hover { background: var(--accent); color: black; box-shadow: 0 0 30px var(--accent); transform: scale(1.05); }
+        .btn-main.mac { background: transparent; border: 1px solid #333; color: white; }
+        .btn-main:hover {
+            background: var(--accent); color: black;
+            box-shadow: 0 0 40px var(--accent);
+            transform: translateY(-5px);
+        }
 
-        /* STUDIO TAB */
-        .studio-box {
-            max-width: 900px; margin: 0 auto; background: var(--glass);
-            padding: 50px; border-radius: 30px; border: 1px solid var(--border);
-            display: grid; grid-template-columns: 1fr 1fr; gap: 40px; text-align: left;
+        /* STUDIO AREA */
+        .studio-card {
+            max-width: 1000px; margin: 0 auto; background: var(--glass);
+            border: 1px solid var(--border); border-radius: 40px; padding: 60px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 50px; text-align: left;
         }
-        .color-dot { width: 30px; height: 30px; border-radius: 50%; display: inline-block; cursor: pointer; margin-right: 10px; border: 2px solid transparent; }
-        .color-dot.active { border-color: white; }
+        .color-selector { display: flex; gap: 15px; margin-top: 20px; }
+        .dot { width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: 0.3s; }
+        .dot.active { border-color: white; transform: scale(1.2); }
+
+        /* DONATE CARD */
+        .donate-box {
+            background: linear-gradient(145deg, #0a0a0a, #151515);
+            padding: 80px; border-radius: 50px; border: 1px solid var(--border);
+            display: inline-block; max-width: 600px;
+        }
     </style>
 </head>
 <body>
 
+    <div class="aura" id="aura"></div>
+
     <nav>
-        <div class="nav-logo">SHIZI <span>STUDIO</span></div>
+        <div class="logo">SHIZI <span>STUDIO</span></div>
         <div class="nav-links">
             <a onclick="showTab('home')" id="l-home" class="active">HOME</a>
             <a onclick="showTab('studio')" id="l-studio">STUDIO</a>
-            <a onclick="showTab('donate')" id="l-donate">DONATE</a>
+            <a onclick="showTab('donate')" id="l-donate">SUPPORT</a>
         </div>
     </nav>
 
     <div id="home" class="container active">
         <div class="panel-3d">
-            <h1 class="shizi-text">SHIZI</h1>
+            <h2 id="glitch-text">SHIZI</h2>
+            <p style="letter-spacing: 15px; color: var(--accent); font-weight: 800;">BEYOND SOUND</p>
         </div>
-        <h1 style="font-size: 3rem;">Experience the Sound.</h1>
-        <p style="color: #666; margin-top: 10px;">The world's most aesthetic 3D Audio Visualizer.</p>
+        <h1 style="font-size: 3.5rem; margin-bottom: 10px;">The Future of Vision.</h1>
+        <p style="color: #666; margin-bottom: 40px; font-size: 1.1rem;">Professional 3D rendering for creators and producers.</p>
         
-        <div class="download-zone">
-            <button class="btn" onclick="triggerDownload('exe')">INSTALL FOR WINDOWS (.EXE)</button>
-            <button class="btn mac" onclick="triggerDownload('dmg')">INSTALL FOR MAC (.DMG)</button>
+        <div class="btn-group">
+            <button class="btn-main" onclick="triggerDownload('exe')">DOWNLOAD FOR WINDOWS</button>
+            <button class="btn-main mac" onclick="triggerDownload('dmg')">DOWNLOAD FOR MAC</button>
         </div>
     </div>
 
     <div id="studio" class="container">
-        <div class="studio-box">
+        <div class="studio-card">
             <div>
-                <h3>THEME COLOR</h3>
-                <p style="color:#666; font-size: 0.8rem; margin-bottom: 15px;">Pick your studio accent.</p>
-                <div class="color-dot active" style="background:#00f2ff" onclick="setAccent('#00f2ff', this)"></div>
-                <div class="color-dot" style="background:#ff007b" onclick="setAccent('#ff007b', this)"></div>
-                <div class="color-dot" style="background:#7000ff" onclick="setAccent('#7000ff', this)"></div>
+                <h3 style="color: var(--accent); letter-spacing: 2px;">WORKSTATION_01</h3>
+                <h1 style="margin: 15px 0;">Customize System</h1>
+                <p style="color: #666;">Choose the primary light-source color for your visualization engine.</p>
+                <div class="color-selector">
+                    <div class="dot active" style="background: #00f2ff;" onclick="setTheme('#00f2ff', this)"></div>
+                    <div class="dot" style="background: #ff0077;" onclick="setTheme('#ff0077', this)"></div>
+                    <div class="dot" style="background: #a200ff;" onclick="setTheme('#a200ff', this)"></div>
+                    <div class="dot" style="background: #00ff62;" onclick="setTheme('#00ff62', this)"></div>
+                </div>
             </div>
-            <div style="border-left: 1px solid var(--border); padding-left: 40px;">
-                <h3>LOAD AUDIO</h3>
-                <button class="btn" style="padding: 10px 20px; margin-top: 20px;" onclick="document.getElementById('aud').click()">SELECT FILE</button>
-                <input type="file" id="aud" style="display:none">
+            <div style="display: flex; flex-direction: column; justify-content: center; border-left: 1px solid var(--border); padding-left: 50px;">
+                <h3 style="color: #444;">ASSET LOADER</h3>
+                <button class="btn-main" style="margin-top: 20px;" onclick="document.getElementById('file-in').click()">SELECT AUDIO FILE</button>
+                <input type="file" id="file-in" style="display: none;">
+                <p style="margin-top: 15px; color: #444; font-size: 0.8rem;">Supports MP3, WAV, FLAC</p>
             </div>
         </div>
     </div>
 
     <div id="donate" class="container">
-        <div style="background: var(--glass); padding: 80px; border-radius: 40px; display: inline-block;">
-            <h2 style="color: var(--accent);">Support the Future</h2>
-            <p style="color:#888; margin: 20px 0;">Fuel the development of Shizi Studio.</p>
-            <button class="btn">DONATE NOW</button>
+        <div class="donate-box">
+            <h1 style="font-size: 3rem; margin-bottom: 20px;">Support <span style="color: var(--accent);">Shizi</span></h1>
+            <p style="color: #777; line-height: 1.8; margin-bottom: 40px;">Help us keep the project open-source and free for all creators worldwide. Your support builds the next generation of visuals.</p>
+            <button class="btn-main" onclick="triggerDonate()">CONTRIBUTE VIA PAYPAL</button>
         </div>
     </div>
 
     <script>
+        // MOUSE AURA TRACKING (VIZZY STYLE)
+        const aura = document.getElementById('aura');
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            aura.style.setProperty('--x', x + '%');
+            aura.style.setProperty('--y', y + '%');
+        });
+
+        // TAB SWITCHING
         function showTab(id) {
             document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
@@ -129,18 +176,26 @@
             document.getElementById('l-' + id).classList.add('active');
         }
 
-        function setAccent(color, el) {
+        // THEME ENGINE
+        function setTheme(color, el) {
             document.documentElement.style.setProperty('--accent', color);
-            document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+            document.documentElement.style.setProperty('--vizzy-glow', color + '26');
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
             el.classList.add('active');
+            document.getElementById('glitch-text').style.textShadow = `0 0 40px ${color}`;
         }
 
+        // ACTIONS
         function triggerDownload(type) {
             let file = (type === 'exe') ? 'shizi.exe' : 'shizi.dmg';
-            alert("Starting Download: " + file);
+            alert("SECURE CONNECTION ESTABLISHED: Downloading " + file);
             window.location.href = "https://github.com/Shaharyar-Khan/shizi-studio/releases/latest/download/" + file;
         }
-    </script>
 
+        function triggerDonate() {
+            alert("Redirecting to PayPal...");
+            window.open("https://www.paypal.com", "_blank");
+        }
+    </script>
 </body>
 </html>
