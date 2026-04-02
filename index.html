@@ -3,199 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHIZI STUDIO | Official Audio Visualizer</title>
+    <title>SHIZI STUDIO | Beyond the Visual</title>
     <style>
         :root {
             --accent: #00f2ff;
-            --bg: #050505;
+            --purple: #7000ff;
+            --dark: #050505;
             --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-            --vizzy-glow: rgba(0, 242, 255, 0.15);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg);
-            color: white;
-            font-family: 'Inter', 'Segoe UI', sans-serif;
+        
+        body { 
+            background: var(--dark); 
+            color: white; 
+            font-family: 'Inter', sans-serif; 
             overflow-x: hidden;
-            background: radial-gradient(circle at 50% -20%, #102022 0%, #050505 80%);
+            cursor: crosshair;
         }
 
-        /* VIZZY STYLE REACTIVE BACKGROUND */
-        .aura {
+        /* 1. ANIMATED NEBULA BACKGROUND */
+        .nebula {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), var(--vizzy-glow) 0%, transparent 50%);
-            z-index: -1; pointer-events: none;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(112, 0, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(0, 242, 255, 0.1) 0%, transparent 40%);
+            z-index: -1; filter: blur(60px);
         }
 
-        /* WORLD-CLASS NAVIGATION */
+        /* 2. NAVIGATION */
         nav {
-            position: fixed; top: 0; width: 100%; height: 70px;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 10%; z-index: 1000;
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(30px);
-            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 25px 5%; background: rgba(5, 5, 5, 0.5);
+            backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 1000;
         }
-        .logo { font-size: 1.4rem; font-weight: 900; letter-spacing: -1px; }
+        .logo { font-size: 1.6rem; font-weight: 900; letter-spacing: -2px; }
         .logo span { color: var(--accent); text-shadow: 0 0 20px var(--accent); }
 
-        .nav-links { display: flex; gap: 40px; }
-        .nav-links a { 
-            text-decoration: none; color: #666; font-weight: 700; font-size: 0.8rem;
-            letter-spacing: 1.5px; transition: 0.4s; cursor: pointer;
+        /* 3. MAIN WORKSPACE */
+        .workspace {
+            display: grid; grid-template-columns: 350px 1fr;
+            min-height: 90vh; padding: 40px; gap: 40px;
         }
-        .nav-links a:hover, .nav-links a.active { color: white; }
 
-        /* HERO SECTION */
-        .container { display: none; padding-top: 150px; text-align: center; animation: slideUp 0.8s ease; }
-        .container.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* THE 3D PANEL (VIZZY SIGNATURE) */
-        .panel-3d {
-            width: 90%; max-width: 850px; height: 420px;
-            margin: 0 auto 60px; border-radius: 50px;
+        /* THE EDITOR SIDEBAR (Just like Vizzy) */
+        .editor-panel {
             background: var(--glass); border: 1px solid var(--border);
+            border-radius: 30px; padding: 30px; backdrop-filter: blur(30px);
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        .control-group { margin-bottom: 20px; }
+        .control-group label { display: block; font-size: 0.7rem; color: #555; letter-spacing: 2px; margin-bottom: 10px; }
+        
+        .custom-input {
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+            padding: 12px; border-radius: 10px; color: white; font-size: 0.9rem;
+        }
+
+        /* THE DISPLAY STAGE */
+        .stage {
+            background: rgba(0,0,0,0.4); border-radius: 40px;
+            border: 1px solid var(--border); position: relative;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            backdrop-filter: blur(20px); transition: 0.6s cubic-bezier(0.2, 1, 0.3, 1);
-            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+            overflow: hidden;
         }
-        .panel-3d:hover {
-            transform: translateY(-20px) scale(1.02);
-            border-color: var(--accent);
-            box-shadow: 0 0 60px var(--vizzy-glow);
-        }
-        .panel-3d h2 { font-size: 10vw; font-weight: 900; letter-spacing: -10px; opacity: 0.9; text-shadow: 0 0 40px var(--accent); }
-
-        /* BUTTON DESIGN - WORLD BEST STYLE */
-        .btn-group { display: flex; justify-content: center; gap: 20px; }
-        .btn-main {
-            background: white; color: black; border: none; padding: 20px 45px;
-            border-radius: 15px; font-weight: 800; font-size: 1rem;
-            cursor: pointer; transition: 0.5s;
-        }
-        .btn-main.mac { background: transparent; border: 1px solid #333; color: white; }
-        .btn-main:hover {
-            background: var(--accent); color: black;
-            box-shadow: 0 0 40px var(--accent);
-            transform: translateY(-5px);
+        
+        .visualizer-ring {
+            width: 300px; height: 300px; border: 2px solid var(--accent);
+            border-radius: 50%; box-shadow: 0 0 50px var(--accent);
+            animation: pulse 2s infinite alternate;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: 900; font-size: 3rem; letter-spacing: 5px;
         }
 
-        /* STUDIO AREA */
-        .studio-card {
-            max-width: 1000px; margin: 0 auto; background: var(--glass);
-            border: 1px solid var(--border); border-radius: 40px; padding: 60px;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 50px; text-align: left;
+        @keyframes pulse {
+            from { transform: scale(1); box-shadow: 0 0 30px var(--accent); }
+            to { transform: scale(1.1); box-shadow: 0 0 60px var(--purple); border-color: var(--purple); }
         }
-        .color-selector { display: flex; gap: 15px; margin-top: 20px; }
-        .dot { width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: 0.3s; }
-        .dot.active { border-color: white; transform: scale(1.2); }
 
-        /* DONATE CARD */
-        .donate-box {
-            background: linear-gradient(145deg, #0a0a0a, #151515);
-            padding: 80px; border-radius: 50px; border: 1px solid var(--border);
-            display: inline-block; max-width: 600px;
+        /* 4. TEMPLATE CARDS (3D HOVER) */
+        .grid { display: flex; gap: 25px; padding: 0 40px 60px; overflow-x: auto; }
+        .card {
+            min-width: 280px; height: 180px; background: var(--glass);
+            border: 1px solid var(--border); border-radius: 20px;
+            padding: 20px; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer; position: relative;
+        }
+        .card:hover { 
+            transform: translateY(-15px) rotateX(10deg); 
+            border-color: var(--accent); 
+            background: rgba(255,255,255,0.05);
+        }
+        .card h3 { color: var(--accent); font-size: 0.9rem; margin-top: 100px; }
+
+        /* BUTTONS */
+        .btn-glow {
+            padding: 15px 40px; border-radius: 50px; border: none;
+            background: white; color: black; font-weight: 800;
+            cursor: pointer; transition: 0.4s;
+        }
+        .btn-glow:hover { 
+            background: var(--accent); 
+            box-shadow: 0 0 40px var(--accent); 
+            transform: scale(1.1);
         }
     </style>
 </head>
 <body>
 
-    <div class="aura" id="aura"></div>
+    <div class="nebula"></div>
 
     <nav>
         <div class="logo">SHIZI <span>STUDIO</span></div>
-        <div class="nav-links">
-            <a onclick="showTab('home')" id="l-home" class="active">HOME</a>
-            <a onclick="showTab('studio')" id="l-studio">STUDIO</a>
-            <a onclick="showTab('donate')" id="l-donate">SUPPORT</a>
+        <div style="display: flex; gap: 30px;">
+            <button class="btn-glow" style="padding: 10px 25px; background: transparent; color: white; border: 1px solid #333;">Sign In</button>
+            <button class="btn-glow" style="padding: 10px 25px;">Export App</button>
         </div>
     </nav>
 
-    <div id="home" class="container active">
-        <div class="panel-3d">
-            <h2 id="glitch-text">SHIZI</h2>
-            <p style="letter-spacing: 15px; color: var(--accent); font-weight: 800;">BEYOND SOUND</p>
-        </div>
-        <h1 style="font-size: 3.5rem; margin-bottom: 10px;">The Future of Vision.</h1>
-        <p style="color: #666; margin-bottom: 40px; font-size: 1.1rem;">Professional 3D rendering for creators and producers.</p>
-        
-        <div class="btn-group">
-            <button class="btn-main" onclick="triggerDownload('exe')">DOWNLOAD FOR WINDOWS</button>
-            <button class="btn-main mac" onclick="triggerDownload('dmg')">DOWNLOAD FOR MAC</button>
-        </div>
-    </div>
-
-    <div id="studio" class="container">
-        <div class="studio-card">
-            <div>
-                <h3 style="color: var(--accent); letter-spacing: 2px;">WORKSTATION_01</h3>
-                <h1 style="margin: 15px 0;">Customize System</h1>
-                <p style="color: #666;">Choose the primary light-source color for your visualization engine.</p>
-                <div class="color-selector">
-                    <div class="dot active" style="background: #00f2ff;" onclick="setTheme('#00f2ff', this)"></div>
-                    <div class="dot" style="background: #ff0077;" onclick="setTheme('#ff0077', this)"></div>
-                    <div class="dot" style="background: #a200ff;" onclick="setTheme('#a200ff', this)"></div>
-                    <div class="dot" style="background: #00ff62;" onclick="setTheme('#00ff62', this)"></div>
+    <div class="workspace">
+        <div class="editor-panel">
+            <div class="control-group">
+                <label>PROJECT NAME</label>
+                <input type="text" class="custom-input" value="Untiled_Visualizer" id="proj-name">
+            </div>
+            
+            <div class="control-group">
+                <label>ACCENT THEME</label>
+                <div style="display: flex; gap: 10px;">
+                    <div onclick="changeTheme('#00f2ff')" style="width:25px; height:25px; background:#00f2ff; border-radius:5px; cursor:pointer;"></div>
+                    <div onclick="changeTheme('#ff007b')" style="width:25px; height:25px; background:#ff007b; border-radius:5px; cursor:pointer;"></div>
+                    <div onclick="changeTheme('#a200ff')" style="width:25px; height:25px; background:#a200ff; border-radius:5px; cursor:pointer;"></div>
                 </div>
             </div>
-            <div style="display: flex; flex-direction: column; justify-content: center; border-left: 1px solid var(--border); padding-left: 50px;">
-                <h3 style="color: #444;">ASSET LOADER</h3>
-                <button class="btn-main" style="margin-top: 20px;" onclick="document.getElementById('file-in').click()">SELECT AUDIO FILE</button>
-                <input type="file" id="file-in" style="display: none;">
-                <p style="margin-top: 15px; color: #444; font-size: 0.8rem;">Supports MP3, WAV, FLAC</p>
+
+            <div class="control-group">
+                <label>SENSITIVITY</label>
+                <input type="range" style="width: 100%; accent-color: var(--accent);">
             </div>
+
+            <button class="btn-glow" style="width: 100%; margin-top: auto;">RENDER VIDEO</button>
+        </div>
+
+        <div class="stage">
+            <div class="visualizer-ring">SHIZI</div>
+            <h1 style="margin-top: 40px; font-size: 3rem; letter-spacing: -2px;">Edit your Vision.</h1>
+            <p style="color: #444; margin-top: 10px;">The world's first interactive 3D studio browser.</p>
         </div>
     </div>
 
-    <div id="donate" class="container">
-        <div class="donate-box">
-            <h1 style="font-size: 3rem; margin-bottom: 20px;">Support <span style="color: var(--accent);">Shizi</span></h1>
-            <p style="color: #777; line-height: 1.8; margin-bottom: 40px;">Help us keep the project open-source and free for all creators worldwide. Your support builds the next generation of visuals.</p>
-            <button class="btn-main" onclick="triggerDonate()">CONTRIBUTE VIA PAYPAL</button>
-        </div>
+    <h2 style="padding: 0 40px 20px; font-size: 1rem; color: #444; letter-spacing: 3px;">POPULAR_TEMPLATES</h2>
+    <div class="grid">
+        <div class="card"><h3>CYBER_PULSE</h3><p style="font-size: 0.7rem; color: #555;">Used by 4.2k artists</p></div>
+        <div class="card"><h3>GHOST_WAVE</h3><p style="font-size: 0.7rem; color: #555;">Used by 1.1k artists</p></div>
+        <div class="card"><h3>NEON_STORM</h3><p style="font-size: 0.7rem; color: #555;">Used by 8.5k artists</p></div>
+        <div class="card"><h3>ORBITAL_REMIX</h3><p style="font-size: 0.7rem; color: #555;">Used by 2.3k artists</p></div>
     </div>
 
     <script>
-        // MOUSE AURA TRACKING (VIZZY STYLE)
-        const aura = document.getElementById('aura');
-        document.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth) * 100;
-            const y = (e.clientY / window.innerHeight) * 100;
-            aura.style.setProperty('--x', x + '%');
-            aura.style.setProperty('--y', y + '%');
-        });
-
-        // TAB SWITCHING
-        function showTab(id) {
-            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.getElementById('l-' + id).classList.add('active');
-        }
-
-        // THEME ENGINE
-        function setTheme(color, el) {
+        function changeTheme(color) {
             document.documentElement.style.setProperty('--accent', color);
-            document.documentElement.style.setProperty('--vizzy-glow', color + '26');
-            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
-            el.classList.add('active');
-            document.getElementById('glitch-text').style.textShadow = `0 0 40px ${color}`;
         }
 
-        // ACTIONS
-        function triggerDownload(type) {
-            let file = (type === 'exe') ? 'shizi.exe' : 'shizi.dmg';
-            alert("SECURE CONNECTION ESTABLISHED: Downloading " + file);
-            window.location.href = "https://github.com/Shaharyar-Khan/shizi-studio/releases/latest/download/" + file;
-        }
-
-        function triggerDonate() {
-            alert("Redirecting to PayPal...");
-            window.open("https://www.paypal.com", "_blank");
-        }
+        // Add 3D Tilt effect to cards
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                let x = e.offsetX;
+                let y = e.offsetY;
+                let midX = card.offsetWidth / 2;
+                let midY = card.offsetHeight / 2;
+                card.style.transform = `perspective(500px) rotateX(${(y - midY) / 10}deg) rotateY(${(midX - x) / 10}deg) translateY(-10px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(500px) rotateX(0deg) rotateY(0deg) translateY(0)`;
+            });
+        });
     </script>
 </body>
 </html>
