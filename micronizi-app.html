@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MICRONIZI | Aesthetic OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Outfit:wght@900&family=JetBrains+Mono&display=swap');
+
+        :root {
+            --vizzy-purple: #7c4dff;
+            --vizzy-cyan: #00e5ff;
+            --bg: #030305;
+            --glass: rgba(18, 18, 28, 0.7);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-image: linear-gradient(rgba(124, 77, 255, 0.1) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(124, 77, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: backgroundMove 20s linear infinite;
+        }
+
+        @keyframes backgroundMove { from { background-position: 0 0; } to { background-position: 0 30px; } }
+
+        /* The Canvas is no longer fullscreen; it's a layer on the floor */
+        #render-engine {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            height: 60vh;
+            z-index: 1;
+            filter: blur(20px); /* Creates the floor reflection effect */
+        }
+
+        /* Glassmorphism Panels */
+        .glass {
+            background: var(--glass);
+            backdrop-filter: blur(30px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        .view { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: 0.6s ease-in-out; z-index: 10; }
+        .active-view { opacity: 1; pointer-events: all; }
+        
+        /* Custom Glowing Range Slider */
+        input[type=range] { cursor: pointer; }
+        input[type=range]::-webkit-slider-thumb {
+            box-shadow: 0 0 10px rgba(124, 77, 255, 0.5);
+            border-radius: 5px;
+            height: 10px; width: 10px;
+        }
+
+        /* The Floating Composition Layer (like Vizzy video editor) */
+        #main-editor {
+            position: absolute;
+            top: 100px;
+            left: 300px;
+            right: 350px;
+            bottom: 120px;
+            z-index: 2;
+        }
+        
+        .upload-zone { border: 2px dashed rgba(0, 229, 255, 0.2); transition: all 0.3s; cursor: pointer; }
+        .upload-zone:hover { border-color: var(--vizzy-cyan); background: rgba(0, 229, 255, 0.05); }
+    </style>
+</head>
+<body class="p-3 flex flex-col gap-3">
+
+    <canvas id="render-engine"></canvas>
+    
+    <input type="file" id="audio-upload" accept="audio/*" class="hidden">
+    <audio id="audio-player" class="hidden"></audio>
+
+    <div id="landing" class="view active-view flex flex-col items-center justify-center text-center p-10">
+        <header class="h-20 glass absolute top-4 left-4 right-4 flex items-center justify-between px-10">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-black text-black">M</div>
+                <h1 class="text-xl font-black italic tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">MICRONIZI</h1>
+            </div>
+            <nav class="flex gap-10 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                <span class="text-white">Home</span>
+                <span onclick="switchView('studio')" class="hover:text-white cursor-pointer">Studio</span>
+            </div>
+            <button class="bg-white text-black px-6 py-2 rounded-full text-[10px] font-black uppercase">Login</button>
+        </header>
+        
+        <h2 class="text-9xl font-black italic tracking-tighter mb-4 leading-none text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-800">BUILD BETTER.</h2>
+        <p class="text-slate-400 max-w-lg mb-12">The world's most advanced web-based audio engine. Visualizing sound in 2026.</p>
+        <button onclick="switchView('studio')" class="bg-white text-black px-12 py-5 rounded-full font-black text-xl hover:scale-110 transition shadow-[0_0_40px_rgba(255,255,255,0.2)]">LAUNCH STUDIO ➔</button>
+    </div>
+
+    <div id="studio" class="view flex flex-col gap-3">
+        <header class="h-14 glass flex items-center justify-between px-6 border border-white/10 shadow-[0_0_20px_rgba(124,77,255,0.1)]">
+            <div class="flex items-center gap-10">
+                <span onclick="switchView('landing')" class="font-black italic text-sm cursor-pointer text-purple-400">MICRONIZI</span>
+                <nav class="flex gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <span class="hover:text-white cursor-pointer">File</span>
+                    <span class="hover:text-white cursor-pointer">Edit</span>
+                    <span class="hover:text-white cursor-pointer">Select</span>
+                    <span class="hover:text-white cursor-pointer">Analyze</span>
+                </nav>
+            </div>
+            <div class="flex items-center gap-6">
+                <button onclick="document.getElementById('audio-upload').click()" class="bg-white/10 hover:bg-white/20 border border-white/5 px-6 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transiton">+ Load Track</button>
+                <div class="w-8 h-8 rounded-full bg-slate-800 border border-white/10"></div>
+            </div>
+        </header>
+
+        <div id="main-editor" class="flex-1 overflow-hidden">
+            <aside class="absolute left-0 top-0 bottom-0 w-[270px] glass p-6 flex flex-col shadow-2xl shadow-black/50">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Track 01</h3>
+                    <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse" id="status-dot"></div>
+                </div>
+                
+                <div class="p-4 bg-white/5 rounded-2xl border border-l-4 border-cyan-400 mb-6">
+                    <span class="text-[10px] font-bold text-white uppercase block mb-1">Master Volume</span>
+                    <span class="font-mono text-[9px] text-cyan-400 block mb-3 uppercase" id="track-name">No Audio Loaded</span>
+                    <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5" class="w-full h-1 accent-cyan-400 bg-white/10 appearance-none rounded-full cursor-pointer">
+                </div>
+
+                <div class="mt-auto p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20 text-center">
+                    <p class="text-[9px] text-purple-300 font-bold leading-relaxed italic">The developers are working on it, it will come soon!</p>
+                </div>
+            </aside>
+
+            <div class="absolute inset-0 flex items-center justify-center p-10 pl-[300px] pr-[350px]">
+                <div id="composition" class="w-full h-full glass border border-l-4 border-purple-500 flex items-center justify-center relative overflow-hidden shadow-2xl shadow-purple-950/20">
+                    <div id="comp-msg" class="upload-zone p-10 rounded-3xl text-center" onclick="document.getElementById('audio-upload').click()">
+                        <div class="w-16 h-16 border-2 border-white/10 rounded-full flex items-center justify-center text-slate-400 text-3xl mx-auto mb-4 animate-pulse">↑</div>
+                        <h4 class="text-white font-black text-sm uppercase tracking-widest">Drop audio file</h4>
+                        <p class="text-slate-500 text-xs mt-1">Accepts MP3, WAV, OGG</p>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="absolute right-0 top-0 bottom-0 w-[320px] glass p-8 shadow-2xl shadow-black/50">
+                <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-10">Scene Props</h3>
+                <div class="space-y-10">
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-[11px] font-bold text-slate-300"><span>Spectrum Intensity</span><span>1.5x</span></div>
+                        <input type="range" id="sensitivity" min="0.1" max="3" step="0.1" value="1.5" class="w-full h-1 bg-white/10 accent-purple-500 appearance-none rounded-full cursor-pointer">
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between text-[11px] font-bold text-slate-300"><span>Glow Radius</span><span>0.8px</span></div>
+                        <input type="range" class="w-full h-1 bg-white/10 accent-cyan-400 appearance-none rounded-full cursor-pointer">
+                    </div>
+                    <button class="w-full py-4 mt-10 rounded-2xl bg-white/5 border border-white/10 text-[11px] font-black uppercase hover:bg-white/10 transition">Add effect layer +</button>
+                </div>
+            </aside>
+        </div>
+
+        <footer class="h-28 glass flex items-center justify-between px-10 border border-white/10 shadow-[0_0_20px_rgba(0,229,255,0.1)]">
+            <div class="w-[200px]">
+                <div class="font-mono text-cyan-400 text-sm" id="timer">00:00 / 00:00</div>
+                <div class="text-[9px] text-slate-500 uppercase font-black">MASTER STEREO | 48000Hz</div>
+            </div>
+            
+            <div class="flex gap-6 items-center">
+                <button onclick="toggleAudio()" id="play-btn" class="w-16 h-16 bg-white text-black rounded-full flex items-center justify-center text-2xl shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95 transition">▶</button>
+                <button onclick="alert('Rendering HD scene...')" class="bg-gradient-to-r from-purple-600 to-indigo-600 px-10 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-purple-500/20">Render</button>
+            </div>
+            <div class="w-[200px] text-right font-bold text-xs">Micronizi OS v2.6</div>
+        </footer>
+    </div>
+
+    <script>
+        function switchView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active-view'));
+            document.getElementById(id).classList.add('active-view');
+        }
+
+        const audioInput = document.getElementById('audio-upload');
+        const audioPlayer = document.getElementById('audio-player');
+        const playBtn = document.getElementById('play-btn');
+        const trackNameText = document.getElementById('track-name');
+        const statusDot = document.getElementById('status-dot');
+        const volSlider = document.getElementById('volume-slider');
+        const timerTxt = document.getElementById('timer');
+        const senseSlider = document.getElementById('sensitivity');
+        const compMsg = document.getElementById('comp-msg');
+
+        let audioCtx, analyser, source;
+        let dataArray, bufferLength;
+        let isSetup = false;
+        let sensitivity = 1.5;
+
+        senseSlider.addEventListener('input', (e) => sensitivity = e.target.value);
+        volSlider.addEventListener('input', (e) => audioPlayer.volume = e.target.value);
+
+        audioInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if(file) {
+                audioPlayer.src = URL.createObjectURL(file);
+                trackNameText.innerText = file.name.substring(0, 20) + '...';
+                statusDot.classList.replace('bg-red-500', 'bg-green-500');
+                compMsg.style.display = 'none';
+                
+                setupAudio();
+                audioPlayer.play();
+                playBtn.innerHTML = '⏸';
+            }
+        });
+
+        function setupAudio() {
+            if(isSetup) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            source = audioCtx.createMediaElementSource(audioPlayer);
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
+            
+            analyser.fftSize = 256;
+            bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            isSetup = true;
+            renderCanvas();
+        }
+
+        function toggleAudio() {
+            if(!audioPlayer.src) { alert("File missing! File -> Load Track."); return; }
+            if(audioPlayer.paused) { audioPlayer.play(); playBtn.innerHTML = '⏸'; }
+            else { audioPlayer.pause(); playBtn.innerHTML = '▶'; }
+        }
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            const fmt = (t) => isNaN(t) ? "00:00" : `${Math.floor(t/60).toString().padStart(2,'0')}:${Math.floor(t%60).toString().padStart(2,'0')}`;
+            timerTxt.innerText = `${fmt(audioPlayer.currentTime)} / ${fmt(audioPlayer.duration)}`;
+        });
+
+        // --- 3D PERSPECTIVE FLOOR VISUALIZER (Better than Vizzy) ---
+        const canvas = document.getElementById('render-engine');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight * 0.6; // Canvas is a floor layer
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function renderCanvas() {
+            requestAnimationFrame(renderCanvas);
+            
+            // Fading trail effect for motion
+            ctx.fillStyle = 'rgba(3, 3, 5, 0.3)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if(!isSetup || audioPlayer.paused) return;
+
+            analyser.getByteFrequencyData(dataArray);
+
+            const bars = bufferLength; // 128 bars
+            const barWidth = canvas.width / bars;
+
+            // PERSPECTIVE TRANSFORM: Draw bars receding into the floor
+            for(let i = 0; i < bars; i++) {
+                // Symmetrical Wave (High frequencies in center)
+                const dataIndex = Math.abs(i - bars / 2);
+                const value = dataArray[i] * sensitivity;
+                
+                // Perspective logic (bars get smaller and fade towards the back)
+                const perspective = Math.max(0.1, 1 - (i / bars * 0.8));
+                
+                const w = barWidth;
+                const h = value * perspective;
+                const x = i * barWidth;
+                const y = canvas.height - h; // Base of the bars is at the bottom
+
+                // Gradient that reacts to the height of the wave
+                let gradient = ctx.createLinearGradient(x, y, x, canvas.height);
+                gradient.addColorStop(0, '#00e5ff'); // Top Cyan
+                gradient.addColorStop(0.5, '#7c4dff'); // Middle Purple
+                gradient.addColorStop(1, 'rgba(124, 77, 255, 0)'); // Bottom faders out
+
+                ctx.fillStyle = gradient;
+                
+                // Add Glow to the peak
+                ctx.shadowBlur = Math.min(value / 5, 40);
+                ctx.shadowColor = '#00e5ff';
+                
+                ctx.fillRect(x, y, w, h);
+            }
+        }
+    </script>
+</body>
+</html>
